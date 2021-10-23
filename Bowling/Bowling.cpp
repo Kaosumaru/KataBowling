@@ -3,6 +3,10 @@
 #include <array>
 #include <numeric>
 #include <cassert>
+#define CATCH_CONFIG_MAIN
+#include <catch2/catch.hpp>
+#include <catch2/catch_reporter_tap.hpp>
+
 
 class Game;
 
@@ -78,10 +82,17 @@ Frame Frame::Create(Game& game, int* rollPointer)
     return Frame{ type, rollPointer };
 }
 
-int main()
+int TestScore(const std::vector<int>& rolls)
 {
     Game g;
-    for (int i = 0; i < 12; i++)
-        g.roll(10);
-    std::cout << g.score();
+    for (auto& roll : rolls) g.roll(roll);
+    return g.score();
+}
+
+TEST_CASE("Ensure points are correct", "[bowling]") {
+    REQUIRE(TestScore({}) == 0);
+    REQUIRE(TestScore({ 1, 1, 1, 1, 1 }) == 5);
+    REQUIRE(TestScore({ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }) == 0);
+    REQUIRE(TestScore({ 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10 }) == 300);
+    REQUIRE(TestScore({ 10, 3, 7, 10, 10, 3, 5 }) == 89);
 }
